@@ -4,45 +4,48 @@
 import cv2
 import heapq
 
-
 def dijkstra(grafo, inicio, final):
-    # Creamos un diccionario para almacenar la distancia más corta desde el nodo de inicio hasta cada nodo
-    distancias = {nodo: float('inf') for nodo in grafo}
+    distancias = {nodo: float('inf') for nodo in grafo}     #Diccionario de distancias
     distancias[inicio] = 0
-
-    # Creamos un diccionario para almacenar la ruta más corta desde el nodo de inicio hasta cada nodo
     ruta_mas_corta = {}
 
-    # Creamos una cola de prioridad con la tupla (distancia, nodo)
-    cola = [(0, inicio)]
+    cola = [(0, inicio)]        #Tupla Distancia y nodo inicio
 
     while cola:
-        # Sacamos el nodo con la distancia más corta de la cola de prioridad
-        (distancia_actual, nodo_actual) = heapq.heappop(cola)
+        (distancia_actual, nodo_actual) = heapq.heappop(cola)   #Sacamos el nodo con la distancia más corta
 
-        # Si hemos llegado al nodo final, devolvemos la ruta más corta hasta ese nodo
-        if nodo_actual == final:
+        if nodo_actual == final:        #Checamos si llegamos al final para indicar la ruta creada
             ruta = []
             while nodo_actual in ruta_mas_corta:
                 ruta.insert(0, nodo_actual)
                 nodo_actual = ruta_mas_corta[nodo_actual]
             ruta.insert(0, nodo_actual)
+
+            #Tabla
+            print(f"{'Nodo actual':<15}{'Dist. desde ini.':<18}{'Nodo previo':<15}{'Dist. total':<15}")
+            distancia_total = 0
+            for i in range(len(ruta)):
+                if i == 0:
+                    print(f"{ruta[i]:<15}{str(distancias[ruta[i]]):<18}{'-':<15}{str(distancias[ruta[i]]):<15}")
+                else:
+                    print(f"{ruta[i]:<15}{str(distancias[ruta[i]]):<18}{str(ruta_mas_corta[ruta[i]]):<15}{str(distancia_total + grafo[ruta_mas_corta[ruta[i]]][ruta[i]]):<15}")
+                    distancia_total += grafo[ruta_mas_corta[ruta[i]]][ruta[i]]
+
             return ruta
 
-        # Si no hemos llegado al nodo final, comprobamos sus vecinos
-        for vecino in grafo[nodo_actual]:
+        for vecino in grafo[nodo_actual]:       #Comparamos nodos vecinos
             distancia = distancia_actual + grafo[nodo_actual][vecino]
 
-            # Si hemos encontrado una distancia más corta, actualizamos las distancias y la ruta
-            if distancia < distancias[vecino]:
+            if distancia < distancias[vecino]:     #Actualizamos distancia más corta
                 distancias[vecino] = distancia
                 ruta_mas_corta[vecino] = nodo_actual
                 heapq.heappush(cola, (distancia, vecino))
 
-    # Si no se encontró ninguna ruta, devolvemos None
-    return None
+    return None #En caso de no haber ruta
 
 
+
+#Diccionario simulando el grafo, sus nodos y distancias.
 grafo = {
     'A': {'B': 2, 'C': 6},
     'B': {'A': 2, 'D': 5},
